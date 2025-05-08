@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_mapa"
+            android:icon="@drawable/ic_menu_map"
+            android:title="Mapa"/>
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/ic_menu_person"
+            android:title="Perfil"/>
+        <item
+            android:id="@+id/nav_configuracion"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="Configuración"/>
+    </group>
+
+    <item android:title="Adicional">
+        <menu>
+            <item
+                android:id="@+id/nav_cerrar_sesion"
+                android:icon="@drawable/ic_menu_logout"
+                android:title="Cerrar Sesión"/>
+        </menu>
+    </item>
+</menu> 

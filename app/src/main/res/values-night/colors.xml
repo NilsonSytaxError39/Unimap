@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores base para el tema oscuro -->
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3FFFFFF</color>
+    <color name="card_background_dark">#232323</color>
+    <color name="divider_dark">#1FFFFFFF</color>
+    
+    <!-- Colores de acento para el tema oscuro -->
+    <color name="primary_dark">#BB86FC</color>
+    <color name="primary_variant_dark">#3700B3</color>
+    <color name="secondary_dark">#03DAC6</color>
+    <color name="secondary_variant_dark">#018786</color>
+    
+    <!-- Colores de estado para el tema oscuro -->
+    <color name="error_dark">#CF6679</color>
+    <color name="success_dark">#4CAF50</color>
+    <color name="warning_dark">#FFC107</color>
+    
+    <!-- Colores de fondo para componentes específicos -->
+    <color name="dialog_background_dark">#1E1E1E</color>
+    <color name="bottom_sheet_background_dark">#1E1E1E</color>
+    <color name="navigation_drawer_background_dark">#121212</color>
+    <color name="box_stroke_color">#ED1C24</color>
+    <color name="hint_text_color_dark">#FFFFFF</color>
+</resources> 

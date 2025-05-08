@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/background_light">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UniMap"
+        android:textSize="24sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crear una cuenta"
+        android:textSize="20sp"
+        android:textColor="#ED1C24"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Icono de perfil -->
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_person"
+        android:layout_gravity="center"
+        />
+
+    <!-- Campo de Nombre -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/CustomTextInputOutlined"
+        app:boxStrokeColor="@color/box_stroke_color"
+        app:hintTextColor="@color/hint_text_color_light"
+        app:boxBackgroundColor="@color/card_background_light">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombres"
+            android:inputType="textPersonName"
+            android:textColor="#000000"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Campo de Correo -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/CustomTextInputOutlined"
+        app:boxBackgroundColor="@color/card_background_light"
+        app:boxStrokeColor="@color/box_stroke_color"
+        app:hintTextColor="@color/hint_text_color_light">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo institucional (@correounivalle.edu.co)"
+            android:inputType="textEmailAddress"
+            android:textColor="#000000"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Campo de Contraseña -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/CustomTextInputOutlined"
+        app:passwordToggleEnabled="true"
+        app:boxBackgroundColor="@color/card_background_light"
+        app:boxStrokeColor="@color/box_stroke_color"
+        app:hintTextColor="@color/hint_text_color_light">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:textColor="#000000"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Campo de Confirmar Contraseña -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        style="@style/CustomTextInputOutlined"
+        app:passwordToggleEnabled="true"
+        app:boxBackgroundColor="@color/card_background_light"
+        app:boxStrokeColor="@color/box_stroke_color"
+        app:hintTextColor="@color/hint_text_color_light">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Confirmar contraseña"
+            android:inputType="textPassword"
+            android:textColor="#000000"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Botón de Registro -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRegistrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="REGISTRAR"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:backgroundTint="#E70B0B"
+        />
+
+    <!-- Link a Login -->
+    <TextView
+        android:id="@+id/txtTengoCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tengo una cuenta"
+        android:textColor="#ED1C24"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"/>
+
+</LinearLayout>

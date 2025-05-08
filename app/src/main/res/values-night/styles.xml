@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style
+        name="CustomTextInputOutlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextColor">@color/hint_text_color_dark</item>
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+        <item name="boxBackgroundColor">@color/card_background_dark</item>
+    </style>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#B71C1C</item>
+        <item name="colorPrimaryVariant">#7F0000</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">#B71C1C</item>
+        <item name="colorSecondaryVariant">#7F0000</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources> 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores base -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#757575</color>
+    
+    <!-- Colores primarios -->
+    <color name="red_primary">#D32F2F</color>
+    <color name="red_dark">#B71C1C</color>
+    <color name="teal_200">#80CBC4</color>
+    <color name="teal_700">#00796B</color>
+    
+    <!-- Colores de componentes -->
+    <color name="divider_light">#E0E0E0</color>
+    <color name="error_light">#B00020</color>
+    
+    <!-- Colores de fondo -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="card_background_light">#F2F2F2</color>
+    
+    <!-- Colores de texto -->
+    <color name="text_primary_light">#000000</color>
+    <color name="text_secondary_light">#757575</color>
+    <color name="box_stroke_color">#ED1C24</color>
+    <color name="hint_text_color_light">#333333</color>
+</resources>

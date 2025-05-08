@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/info_window_bg"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- Imagen del lugar -->
+    <ImageView
+        android:id="@+id/imgLugar"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Imagen del lugar" />
+
+    <!-- Título del lugar -->
+    <TextView
+        android:id="@+id/txtTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Título del lugar"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+
+    <!-- Leyenda corta -->
+    <TextView
+        android:id="@+id/txtDescripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aquí va una descripción corta."
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:paddingTop="4dp" />
+
+</LinearLayout>

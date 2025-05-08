@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "181136259282",
+    "project_id": "univallemap",
+    "storage_bucket": "univallemap.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181136259282:android:ac21c860e629fbe61b950b",
+        "android_client_info": {
+          "package_name": "com.example.univalle_map"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfQ67rZJ17NinG9_OTJNiU8KGEhZfEA1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

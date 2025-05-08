@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@android:color/white">
+
+    <!-- Logo de Univalle -->
+    <ImageView
+        android:id="@+id/splashLogo"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/logo_univalle"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Texto de Bienvenida -->
+    <TextView
+        android:id="@+id/splashText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bienvenido a\nUnivalle Map"
+        android:textSize="32sp"
+        android:textColor="#ED1C24"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+</LinearLayout> 
