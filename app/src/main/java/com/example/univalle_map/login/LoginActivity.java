@@ -78,6 +78,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null && isTaskRoot()) {
+            Intent intent = new Intent(this, MenuPrincipal.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     private void iniciarSesion() {
         try {
             String email = editTextUsuario.getText() != null ? 

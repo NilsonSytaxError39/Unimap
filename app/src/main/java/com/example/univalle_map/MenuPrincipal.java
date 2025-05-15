@@ -111,7 +111,18 @@ public class MenuPrincipal extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        cargarDatosUsuario();
+        boolean esInvitado = getIntent().getBooleanExtra("modo_invitado", false);
+        if (!esInvitado) {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser == null) {
+                mAuth.signOut();
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
+            cargarDatosUsuario();
+        }
     }
 
     private void setupCardClicks() {

@@ -4,62 +4,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:gravity="center"
+    android:padding="32dp"
     android:background="@color/background_light">
+
+    <!-- Logo en la parte superior -->
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_person"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Logo"/>
 
     <!-- Título -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="UniMap"
-        android:textSize="24sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Crear una cuenta"
-        android:textSize="20sp"
-        android:textColor="#ED1C24"
-        android:layout_gravity="center"
-        android:layout_marginBottom="32dp"/>
-
-    <!-- Icono de perfil -->
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_person"
-        android:layout_gravity="center"
-        />
+        android:text="Registro"
+        style="@style/AppTheme"/>
 
     <!-- Campo de Nombre -->
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nombreLayout"
+        style="@style/CustomTextInputOutlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        style="@style/CustomTextInputOutlined"
+        app:boxBackgroundColor="@color/card_background_light"
         app:boxStrokeColor="@color/box_stroke_color"
-        app:hintTextColor="@color/hint_text_color_light"
-        app:boxBackgroundColor="@color/card_background_light">
+        app:hintTextColor="@color/hint_text_color_light">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombres"
+            android:hint="Nombre completo"
             android:inputType="textPersonName"
             android:textColor="#000000"
             android:textColorHint="#757575"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Campo de Correo -->
+    <!-- Campo de Email -->
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailLayout"
+        style="@style/CustomTextInputOutlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        style="@style/CustomTextInputOutlined"
         app:boxBackgroundColor="@color/card_background_light"
         app:boxStrokeColor="@color/box_stroke_color"
         app:hintTextColor="@color/hint_text_color_light">
@@ -68,7 +58,7 @@
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Correo institucional (@correounivalle.edu.co)"
+            android:hint="Correo institucional"
             android:inputType="textEmailAddress"
             android:textColor="#000000"
             android:textColorHint="#757575"/>
@@ -76,11 +66,11 @@
 
     <!-- Campo de Contraseña -->
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordLayout"
+        style="@style/CustomTextInputOutlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        style="@style/CustomTextInputOutlined"
-        app:passwordToggleEnabled="true"
+        app:endIconMode="password_toggle"
         app:boxBackgroundColor="@color/card_background_light"
         app:boxStrokeColor="@color/box_stroke_color"
         app:hintTextColor="@color/hint_text_color_light">
@@ -97,11 +87,11 @@
 
     <!-- Campo de Confirmar Contraseña -->
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/confirmPasswordLayout"
+        style="@style/CustomTextInputOutlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        style="@style/CustomTextInputOutlined"
-        app:passwordToggleEnabled="true"
+        app:endIconMode="password_toggle"
         app:boxBackgroundColor="@color/card_background_light"
         app:boxStrokeColor="@color/box_stroke_color"
         app:hintTextColor="@color/hint_text_color_light">
@@ -119,13 +109,8 @@
     <!-- Botón de Registro -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegistrar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="REGISTRAR"
-        android:textColor="@android:color/white"
-        android:padding="12dp"
-        android:backgroundTint="#E70B0B"
-        />
+        style="@style/AppButton"
+        android:text="REGISTRAR"/>
 
     <!-- Link a Login -->
     <TextView
