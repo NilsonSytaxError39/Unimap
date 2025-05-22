@@ -134,6 +134,7 @@ public class MenuPrincipal extends AppCompatActivity
 
         cardMapa.setOnClickListener(v -> {
             Intent intent = new Intent(MenuPrincipal.this, com.example.univalle_map.mapa.SeleccionSedeActivity.class);
+            intent.putExtra("modo_invitado", getIntent().getBooleanExtra("modo_invitado", false));
             startActivity(intent);
         });
 
@@ -215,6 +216,7 @@ public class MenuPrincipal extends AppCompatActivity
         
         if (id == R.id.nav_mapa) {
             Intent intent = new Intent(MenuPrincipal.this, com.example.univalle_map.mapa.SeleccionSedeActivity.class);
+            intent.putExtra("modo_invitado", getIntent().getBooleanExtra("modo_invitado", false));
             startActivity(intent);
         } else if (id == R.id.nav_perfil) {
             Intent intent = new Intent(MenuPrincipal.this, PerfilActivity.class);

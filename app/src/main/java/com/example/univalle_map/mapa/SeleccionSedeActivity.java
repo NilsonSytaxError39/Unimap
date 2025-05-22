@@ -28,6 +28,10 @@ public class SeleccionSedeActivity extends AppCompatActivity {
         intent.putExtra("latitud", lat);
         intent.putExtra("longitud", lon);
         intent.putExtra("nombreSede", nombreSede);
+
+        boolean esInvitado = getIntent().getBooleanExtra("modo_invitado", false);
+        intent.putExtra("modo_invitado", esInvitado);
+
         startActivity(intent);
     }
 }

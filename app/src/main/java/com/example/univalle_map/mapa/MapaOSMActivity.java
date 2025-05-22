@@ -1,28 +1,121 @@
 package com.example.univalle_map.mapa;
+import android.Manifest;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.view.MotionEvent;
+import android.widget.Toast;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.univalle_map.R;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import okhttp3.*;
+import org.json.*;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.Polyline;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.IOException;
 
 public class MapaOSMActivity extends AppCompatActivity {
     private MapView map;
+    private MyLocationNewOverlay locationOverlay;
+    private Polyline routePolyline;
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+
+    private final OkHttpClient client = new OkHttpClient();
+    private static final String ORS_API_KEY = "5b3ce3597851110001cf62481e3251923eab456e8118966916fa9aaa";
+    private GeoPoint ubicacionActual;
+    private Marker destinoMarker = null;
+    private void requestPermissionsIfNecessary() { // Permisos para ubicacion en tiempo real
+        String[] permissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+        List<String> permissionsToRequest = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(permission);
+            }
+        }
+        if (!permissionsToRequest.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+        } else {
+            // Si ya tiene permisos, se inicializa la ubicacion
+            initLocationOverlay();
+        }
+    }
+
+    private void initLocationOverlay() {  // iniciar la ubicacion
+        if (locationOverlay == null) {
+            locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+            locationOverlay.enableMyLocation();
+            locationOverlay.enableFollowLocation();
+            map.getOverlays().add(locationOverlay);
+
+            locationOverlay.runOnFirstFix(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {      // obtener ubicacion
+                            GeoPoint myLocation = locationOverlay.getMyLocation();
+                            if (myLocation != null) {
+                                ubicacionActual = myLocation;
+                                map.getController().animateTo(myLocation);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,   // resultados de permisos
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            boolean granted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    granted = false;
+                    break;
+                }
+            }
+            if (granted) {
+                initLocationOverlay();
+            } else {
+                Toast.makeText(this, "Permisos de ubicación denegados", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa_osm);
+        boolean esInvitado = getIntent().getBooleanExtra("modo_invitado",false);
 
         // Inicializar OSMDroid
         Context ctx = getApplicationContext();
@@ -33,13 +126,16 @@ public class MapaOSMActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
 
+        // Solicitar permisos para ubicacion
+        requestPermissionsIfNecessary();
+
         // Obtener datos de la sede
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra("latitud", 3.3753);
         double lon = intent.getDoubleExtra("longitud", -76.5320);
         String nombreSede = intent.getStringExtra("nombreSede");
 
-        // Configurar mapa
+        // Configurar mapa en la sede inicial
         GeoPoint startPoint = new GeoPoint(lat, lon);
         map.getController().setZoom(21);
         map.getController().setCenter(startPoint);
@@ -51,7 +147,6 @@ public class MapaOSMActivity extends AppCompatActivity {
         marker.setTitle(nombreSede != null ? nombreSede : "Universidad del Valle Sede Villa");
         map.getOverlays().add(marker);
 
-        //Sede Principe
         // Agregar marcadores personalizados
         agregarMarcadorConInfo(
                 new GeoPoint(4.072012469252898, -76.20329197512085),
@@ -60,7 +155,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.entrada_icon,
                 R.drawable.entrada2_uni
         );
-
+    if(!esInvitado) {
         agregarMarcadorConInfo(
                 new GeoPoint(4.071411873725529, -76.20312009679202),
                 "Salón 13",
@@ -166,6 +261,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.monitoreo_icon,
                 R.drawable.monitoreo_uni
         );
+    }
         agregarMarcadorConInfo(
                 new GeoPoint(4.071554549286222, -76.20322940568116),
                 "Cancha/Zona Eventos",
@@ -236,6 +332,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.bienestar_icon,
                 R.drawable.bienestar_uni
         );
+    if(!esInvitado) {
         agregarMarcadorConInfo(
                 new GeoPoint(4.071703024153608, -76.2033161052089),
                 "Sala de sistemas 1",
@@ -250,6 +347,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.sistemas_icon,
                 R.drawable.salon3_uni
         );
+    }
         ///////////////////////
         // Sede Villacampestre
         agregarMarcadorConInfo(
@@ -357,6 +455,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.salida_icon,
                 R.drawable.salida_uni
         );
+    if(!esInvitado) {
         agregarMarcadorConInfo(
                 new GeoPoint(4.070550685304029, -76.19025653088471),
                 "Laboratorio de Electronica",
@@ -364,6 +463,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.labelec_icon,
                 R.drawable.labelec_uni
         );
+    }
         agregarMarcadorConInfo(
                 new GeoPoint(4.070610746963224, -76.19018577995837),
                 "Baño Hombres -\n Primer Piso",
@@ -378,6 +478,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.banosm_icon,
                 R.drawable.banos2_uni
         );
+    if(!esInvitado) {
         agregarMarcadorConInfo(
                 new GeoPoint(4.070571706885244, -76.19019330665266),
                 "Casilleros",
@@ -441,6 +542,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.salones2_icon,
                 R.drawable.salon1v_uni
         );
+    }
         agregarMarcadorConInfo(
                 new GeoPoint(4.070487775802265, -76.19021047028521),
                 "Baño de mujeres -\n Segundo piso",
@@ -511,6 +613,7 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.autocali_icon,
                 R.drawable.oitel_uni
         );
+    if(!esInvitado) {
         agregarMarcadorConInfo(
                 new GeoPoint(4.070473165629893, -76.19044718031516),
                 "Cuarto De Servidores",
@@ -518,9 +621,144 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.autocali_icon,
                 R.drawable.servidores_uni
         );
-
     }
-    private void agregarMarcadorConInfo(
+        agregarListenerToqueEnMapa();
+    }
+
+    private void agregarListenerToqueEnMapa() {
+        map.getOverlays().add(new Overlay() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
+                // Primero ver si hay un marcador tocado:
+                for (Overlay overlay : mapView.getOverlays()) {
+                    if (overlay instanceof Marker) {
+                        Marker marker = (Marker) overlay;
+                        if (marker.isInfoWindowShown()) {
+                            // Si la InfoWindow ya esta abierta, dejamos que el toque la cierre
+                            return false; // no consumimos el evento, para que Marker maneje el click
+                        }
+                        if (marker.hitTest(e,mapView)) {
+                            // El usuario toca un marcador, dejamos que lo maneje Marker para mostrar la info
+                            return false;
+                        }
+                    }
+                }
+
+                // Si no toco ningun marcador, procedemos con el destino
+
+                if (ubicacionActual == null) {
+                    Toast.makeText(MapaOSMActivity.this, "Ubicación actual no disponible aún", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                GeoPoint destino = (GeoPoint) mapView.getProjection()
+                        .fromPixels((int) e.getX(), (int) e.getY());
+
+                // Eliminar marcador y ruta anterior si existen
+                if (destinoMarker != null) {
+                    mapView.getOverlays().remove(destinoMarker);
+                }
+                if (routePolyline != null) {
+                    mapView.getOverlays().remove(routePolyline);
+                }
+
+                // Añadir marcador destino
+                destinoMarker = new Marker(mapView);
+                destinoMarker.setPosition(destino);
+                destinoMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                destinoMarker.setTitle("Destino seleccionado");
+
+                destinoMarker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker, MapView mapView) {
+                        mapView.getOverlays().remove(marker);
+                        destinoMarker = null;
+
+                        if (routePolyline != null){
+                            mapView.getOverlays().remove(routePolyline);
+                            routePolyline = null;
+                        }
+
+                        mapView.invalidate();
+                        return true;
+                    }
+                });
+
+                mapView.getOverlays().add(destinoMarker);
+
+                // Dibujar ruta
+                mostrarRutaDesdeMiUbicacionHastaDestino(ubicacionActual, destino);
+
+                mapView.invalidate();
+                return true; // consumo el evento solo porque no toco un marcador
+            }
+        });
+    }
+
+    private void mostrarRutaDesdeMiUbicacionHastaDestino(GeoPoint origen, GeoPoint destino) {   // api para las rutas
+        String url = "https://api.openrouteservice.org/v2/directions/foot-walking?api_key="
+                + ORS_API_KEY
+                + "&start=" + origen.getLongitude() + "," + origen.getLatitude()
+                + "&end=" + destino.getLongitude() + "," + destino.getLatitude();
+
+        Request request = new Request.Builder().url(url).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() ->
+                        Toast.makeText(MapaOSMActivity.this, "Error al obtener la ruta", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() ->
+                            Toast.makeText(MapaOSMActivity.this, "Respuesta fallida de ORS", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+
+                String body = response.body().string();
+
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    JSONArray coords = jsonObject
+                            .getJSONArray("features")
+                            .getJSONObject(0)
+                            .getJSONObject("geometry")
+                            .getJSONArray("coordinates");
+
+                    List<GeoPoint> puntos = new ArrayList<>();
+                    for (int i = 0; i < coords.length(); i++) {
+                        JSONArray coord = coords.getJSONArray(i);
+                        double lon = coord.getDouble(0);
+                        double lat = coord.getDouble(1);
+                        puntos.add(new GeoPoint(lat, lon));
+                    }
+
+                    runOnUiThread(() -> dibujarRuta(puntos));
+
+                } catch (JSONException e) {
+                    runOnUiThread(() ->
+                            Toast.makeText(MapaOSMActivity.this, "Error al procesar datos de ruta", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void dibujarRuta(List<GeoPoint> puntos) {    // dibujamos el trazo de la ruta
+        if (routePolyline != null) {
+            map.getOverlays().remove(routePolyline);
+        }
+        routePolyline = new Polyline();
+        routePolyline.setPoints(puntos);
+        routePolyline.setColor(Color.BLUE);
+        routePolyline.setWidth(8f);
+        map.getOverlays().add(routePolyline);
+        map.invalidate();
+    }
+
+    private void agregarMarcadorConInfo(    // para agregar los marcadores personalizados
             GeoPoint posicion,
             String titulo,
             String descripcion,
@@ -536,7 +774,7 @@ public class MapaOSMActivity extends AppCompatActivity {
         marker.setTitle(titulo);
         marker.setIcon(getResources().getDrawable(iconoMarker));
 
-        marker.setInfoWindow(new InfoWindow(R.layout.custom_info_window, map) {
+        marker.setInfoWindow(new InfoWindow(R.layout.custom_info_window, map) {   // mostrar la descripcion foto de los marcadores
             @Override
             public void onOpen(Object item) {
                 View view = mView;
@@ -571,7 +809,7 @@ public class MapaOSMActivity extends AppCompatActivity {
         });
         map.getOverlays().add(marker);
     }
-    private void animateMarkerJump(final Marker marker) {
+    private void animateMarkerJump(final Marker marker) {    // animacion para los marcadores
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final long duration = 600;
