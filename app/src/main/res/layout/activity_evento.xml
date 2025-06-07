@@ -40,17 +40,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/txtRecuperarPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="¿Olvidaste tu contraseña?"
-                android:textColor="#ED1C24"
-                android:textSize="16sp"
-                android:padding="8dp"
-                android:layout_gravity="center_horizontal"
-                android:clickable="true"
-                android:focusable="true"/>
 
         </LinearLayout>
 

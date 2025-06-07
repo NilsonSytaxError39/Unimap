@@ -1,11 +1,13 @@
 package com.example.univalle_map.mapa;
 import android.Manifest;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.view.MotionEvent;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -19,6 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.univalle_map.R;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.events.DelayedMapListener;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import okhttp3.*;
 import org.json.*;
@@ -32,17 +38,21 @@ import org.osmdroid.views.overlay.Polyline;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 public class MapaOSMActivity extends AppCompatActivity {
     private MapView map;
     private MyLocationNewOverlay locationOverlay;
     private Polyline routePolyline;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-
     private final OkHttpClient client = new OkHttpClient();
     private static final String ORS_API_KEY = "5b3ce3597851110001cf62481e3251923eab456e8118966916fa9aaa";
     private GeoPoint ubicacionActual;
     private Marker destinoMarker = null;
+    private GeoPoint sedeDestino;
+    private String nombreSede;
+    ProgressBar progressBar;
+    private boolean ubicacionCentrada = false;
     private void requestPermissionsIfNecessary() { // Permisos para ubicacion en tiempo real
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -67,33 +77,53 @@ public class MapaOSMActivity extends AppCompatActivity {
 
     private void initLocationOverlay() {  // iniciar la ubicacion
         if (locationOverlay == null) {
-            locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+            GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
+            provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
+
+            locationOverlay = new MyLocationNewOverlay(provider, map);
             locationOverlay.enableMyLocation();
             locationOverlay.enableFollowLocation();
             map.getOverlays().add(locationOverlay);
 
-            locationOverlay.runOnFirstFix(new Runnable() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {      // obtener ubicacion
-                            GeoPoint myLocation = locationOverlay.getMyLocation();
-                            if (myLocation != null) {
-                                ubicacionActual = myLocation;
-                                map.getController().animateTo(myLocation);
-                            }
-                        }
-                    });
+            locationOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
+                GeoPoint myLocation = locationOverlay.getMyLocation();
+                if (myLocation != null && !ubicacionCentrada) {
+                    ubicacionActual = myLocation;
+                    ubicacionCentrada = true;
+
+                    progressBar.setVisibility(View.GONE);
+
+                    map.setVisibility(View.VISIBLE);
+                    map.setAlpha(0f);
+                    map.getController().setZoom(19);
+                    map.getController().setCenter(myLocation);
+
+                    if (sedeDestino != null) {
+                        mostrarRutaDesdeMiUbicacionHastaDestino(ubicacionActual, sedeDestino);
+
+                        // MARCADOR EN LA SEDE
+                        Marker marker = new Marker(map);
+                        marker.setPosition(sedeDestino);
+                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                        marker.setTitle(nombreSede != null ? nombreSede : "Sede seleccionada");
+                        map.getOverlays().add(marker);
+                    }
+
+                    // Mostrar mapa con efecto fade
+                    map.animate()
+                            .alpha(1f)
+                            .setDuration(5000)
+                            .setInterpolator(new AccelerateDecelerateInterpolator())
+                            .start();
+
+                    map.invalidate();
                 }
-            });
+            }));
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,   // resultados de permisos
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             boolean granted = true;
@@ -115,34 +145,51 @@ public class MapaOSMActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa_osm);
-        boolean esInvitado = getIntent().getBooleanExtra("modo_invitado",false);
+
+        boolean esInvitado = getIntent().getBooleanExtra("modo_invitado", false);
 
         // Inicializar OSMDroid
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx,
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
 
+        progressBar = findViewById(R.id.progressBar);
         map = findViewById(R.id.map);
+
+        map.setAlpha(0f);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
 
-        // Solicitar permisos para ubicacion
+        // Listener para detectar cuando los tiles ya están cargados (aquí ocultamos el progressBar)
+        map.addMapListener(new DelayedMapListener(new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                return false;
+            }
+
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                if (progressBar.getVisibility() == View.VISIBLE) {
+                    progressBar.setVisibility(View.GONE);
+                    map.setVisibility(View.VISIBLE);
+                }
+                return false;
+            }
+        }, 300));
+
+        // Solicitar permisos para ubicación
         requestPermissionsIfNecessary();
 
-        // Obtener datos de la sede
+        // Obtener datos de la sede desde Intent
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra("latitud", 3.3753);
         double lon = intent.getDoubleExtra("longitud", -76.5320);
-        String nombreSede = intent.getStringExtra("nombreSede");
-
-        // Configurar mapa en la sede inicial
-        GeoPoint startPoint = new GeoPoint(lat, lon);
-        map.getController().setZoom(21);
-        map.getController().setCenter(startPoint);
+        nombreSede = intent.getStringExtra("nombreSede");
+        sedeDestino = new GeoPoint(lat, lon);
 
         // Agregar marcador de sede principal
         Marker marker = new Marker(map);
-        marker.setPosition(startPoint);
+        marker.setPosition(sedeDestino);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         marker.setTitle(nombreSede != null ? nombreSede : "Universidad del Valle Sede Villa");
         map.getOverlays().add(marker);
@@ -622,10 +669,10 @@ public class MapaOSMActivity extends AppCompatActivity {
                 R.drawable.servidores_uni
         );
     }
-        agregarListenerToqueEnMapa();
+        //agregarListenerToqueEnMapa();
     }
 
-    private void agregarListenerToqueEnMapa() {
+    /*private void agregarListenerToqueEnMapa() {
         map.getOverlays().add(new Overlay() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e, MapView mapView) {
@@ -694,7 +741,7 @@ public class MapaOSMActivity extends AppCompatActivity {
             }
         });
     }
-
+    */
     private void mostrarRutaDesdeMiUbicacionHastaDestino(GeoPoint origen, GeoPoint destino) {   // api para las rutas
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking?api_key="
                 + ORS_API_KEY
