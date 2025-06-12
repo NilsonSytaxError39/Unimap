@@ -40,7 +40,7 @@ Univalle_Map/
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/insanewarlord/Univalle_Map.git
+   git clone https://github.com/insanewarlord/Univalle_Map.git](https://github.com/NilsonSytaxError39/Unimap.git
 2. Abre el proyecto en Android Studio.
 
 3. Conecta un dispositivo o inicia un emulador.
